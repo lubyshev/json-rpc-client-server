@@ -1,0 +1,17 @@
+### Send GET request to JSON-RPC
+GET http://rpc-server.loc/rpc
+Content-Type: application/json
+
+{
+  "id": 999,
+  "value": "content"
+}
+
+### Send POST request to JSON-RPC
+POST http://rpc-server.loc/rpc
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 12
+}

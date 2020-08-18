@@ -1,35 +1,62 @@
 <?php
+
+use yii\web\Response;
+
 $params = array_merge(
-    require __DIR__ . '/../../common/config/params.php',
-    require __DIR__ . '/../../common/config/params-local.php',
-    require __DIR__ . '/params.php',
-    require __DIR__ . '/params-local.php'
+    require __DIR__.'/../../common/config/params.php',
+    require __DIR__.'/../../common/config/params-local.php',
+    require __DIR__.'/params.php',
+    require __DIR__.'/params-local.php'
 );
 
 return [
-    'id' => 'app-backend',
-    'basePath' => dirname(__DIR__),
+    'id'                  => 'app-backend',
+    'basePath'            => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
-    'bootstrap' => ['log'],
-    'modules' => [],
-    'components' => [
-        'request' => [
+    'bootstrap'           => ['log'],
+    'modules'             => [],
+    'components'          => [
+        'request'      => [
             'csrfParam' => '_csrf-backend',
         ],
-        'user' => [
-            'identityClass' => 'common\models\User',
-            'enableAutoLogin' => true,
-            'identityCookie' => ['name' => '_identity-backend', 'httpOnly' => true],
+        'response'     => [
+            'on beforeSend' => function ($event) {
+                /** @var Response $response */
+                $response = $event->sender;
+                if ($response->format === Response::FORMAT_JSON && $response->data !== null) {
+                    if ($response->data['status'] !== 200) {
+                        $code           = (int)$response->data['code'];
+                        $message        = $response->data['message'];
+                        $headers        = $response->getHeaders();
+                        $response->data = [
+                            'jsonrpc' => $headers['json-rpc-version'],
+                            'id'      =>
+                                isset($headers['json-rpc-id'])
+                                    ? (int)$headers['json-rpc-id']
+                                    : null,
+                            'error'   => [
+                                "code"    => $code,
+                                "message" => $message,
+                            ],
+                        ];
+                    }
+                }
+            },
         ],
-        'session' => [
+        'user'         => [
+            'identityClass'   => 'common\models\User',
+            'enableAutoLogin' => true,
+            'identityCookie'  => ['name' => '_identity-backend', 'httpOnly' => true],
+        ],
+        'session'      => [
             // this is the name of the session cookie used for login on the backend
             'name' => 'advanced-backend',
         ],
-        'log' => [
+        'log'          => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
-            'targets' => [
+            'targets'    => [
                 [
-                    'class' => 'yii\log\FileTarget',
+                    'class'  => 'yii\log\FileTarget',
                     'levels' => ['error', 'warning'],
                 ],
             ],
@@ -37,14 +64,13 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        /*
-        'urlManager' => [
+        'urlManager'   => [
             'enablePrettyUrl' => true,
-            'showScriptName' => false,
-            'rules' => [
+            'showScriptName'  => false,
+            'rules'           => [
+                'rpc' => 'rpc/index',
             ],
         ],
-        */
     ],
-    'params' => $params,
+    'params'              => $params,
 ];
