@@ -6,44 +6,14 @@ declare(strict_types=1);
 /* @var $content string */
 
 use common\widgets\Alert;
-use frontend\repositories\FormRepository;
+use frontend\services\PagesMenuService;
 use yii\helpers\Html;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use frontend\assets\AppAsset;
 
-$repo = new FormRepository();
-
-// Authors list
-$authorsItem = [
-    'label'    => 'Authors',
-    'options'  => ['class' => 'dropdown'],
-    'template' => '<a href="{url}" class="url-class">{label}</a>',
-    'items'    => [],
-];
-$authors     = $repo->getAllFormsByType(\common\models\fields\FormTypeField::TYPE_AUTHOR);
-foreach ($authors as $item) {
-    $authorsItem['items'][] = [
-        'label' => $item->title,
-        'url'   => ['page/'.$item->uuid],
-    ];
-}
-
-// Books list
-$booksItem = [
-    'label'    => 'Books',
-    'options'  => ['class' => 'dropdown'],
-    'template' => '<a href="{url}" class="url-class">{label}</a>',
-    'items'    => [],
-];
-$books     = $repo->getAllFormsByType(\common\models\fields\FormTypeField::TYPE_BOOK);
-foreach ($books as $item) {
-    $booksItem['items'][] = [
-        'label' => $item->title,
-        'url'   => ['page/'.$item->uuid],
-    ];
-}
+$pages = (new PagesMenuService())->getPagesMenuItems();
 
 AppAsset::register($this);
 ?>
@@ -72,8 +42,8 @@ AppAsset::register($this);
     ]);
     $menuItems = [
         ['label' => 'Home', 'url' => ['/site/index']],
-        $authorsItem,
-        $booksItem,
+        $pages['authors'],
+        $pages['books'],
         ['label' => 'About', 'url' => ['/site/about']],
         ['label' => 'Contact', 'url' => ['/site/contact']],
     ];
