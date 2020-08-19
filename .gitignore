@@ -47,3 +47,6 @@ phpunit.phar
 
 # composer
 composer.lock
+
+# apache logs
+/log

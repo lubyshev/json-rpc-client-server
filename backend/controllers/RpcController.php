@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace backend\controllers;
 
+use backend\services\RpcFormService;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
-use yii\web\HttpException;
 
 class RpcController extends Controller
 {
@@ -30,11 +30,13 @@ class RpcController extends Controller
      */
     public function beforeAction($action)
     {
-        $this->enableCsrfValidation = false;
+        $this->enableCsrfValidation
+                = false;
+        $result = parent::beforeAction($action);
         \Yii::$app->response->headers->add('json-rpc-version', '2.0');
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-        return parent::beforeAction($action);
+        return $result;
     }
 
     /**
@@ -44,9 +46,7 @@ class RpcController extends Controller
      */
     public function actionIndex(): array
     {
-        \Yii::$app->response->headers->add('json-rpc-id', 12);
-
-        throw new HttpException(500, 'Parse error', -32700);
+        return (new RpcFormService())->getForm();
     }
 
 }

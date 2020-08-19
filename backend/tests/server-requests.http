@@ -13,5 +13,9 @@ Content-Type: application/json
 
 {
   "jsonrpc": "2.0",
-  "id": 12
+  "id": 15,
+  "method": "getAuthorForm",
+  "params": {
+    "pageUid": null
+  }
 }

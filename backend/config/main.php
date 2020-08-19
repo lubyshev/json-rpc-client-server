@@ -1,5 +1,6 @@
 <?php
 
+use Fig\Http\Message\StatusCodeInterface as StatusCodes;
 use yii\web\Response;
 
 $params = array_merge(
@@ -18,13 +19,16 @@ return [
     'components'          => [
         'request'      => [
             'csrfParam' => '_csrf-backend',
+            'parsers'   => [
+                'application/json' => 'yii\web\JsonParser',
+            ],
         ],
         'response'     => [
             'on beforeSend' => function ($event) {
                 /** @var Response $response */
                 $response = $event->sender;
                 if ($response->format === Response::FORMAT_JSON && $response->data !== null) {
-                    if ($response->data['status'] !== 200) {
+                    if ($response->statusCode !== StatusCodes::STATUS_OK) {
                         $code           = (int)$response->data['code'];
                         $message        = $response->data['message'];
                         $headers        = $response->getHeaders();
