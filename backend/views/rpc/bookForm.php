@@ -5,4 +5,39 @@ declare(strict_types=1);
  * @var array $fields
  */
 ?>
-<h1>Book form</h1>
+<div class="container" style="width:60%">
+  <h1>Book form</h1>
+  <table class="table">
+    <thead>
+    <tr>
+      <th>
+        <h3>Title</h3>
+      </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>
+        <input type="text" name="title" style="width: 100%; padding: 1px" value="{{ title }}">
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  <table class="table">
+    <thead>
+    <tr>
+      <th>
+        <h3>Review</h3>
+      </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>
+        <textarea name="review" style="width: 100%; padding: 1px">{{ review }}</textarea>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
