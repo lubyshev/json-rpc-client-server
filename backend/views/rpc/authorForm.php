@@ -6,7 +6,6 @@ declare(strict_types=1);
  */
 ?>
 <div class="container" style="width:60%">
-  <h1>Author form</h1>
   <table class="table">
     <thead>
     <tr>
@@ -49,3 +48,5 @@ declare(strict_types=1);
     </tbody>
   </table>
 </div>
+<input type="hidden" name="pageUid" value="<?= $fields['pageUid'] ?>">
+<input type="hidden" name="formType" value="<?= $fields['formType'] ?>">
