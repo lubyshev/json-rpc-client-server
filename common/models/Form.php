@@ -14,6 +14,7 @@ use yii\db\ActiveRecord;
  * @property integer                     $id
  * @property string                      $uuid
  * @property string|FormTypeField        $formType
+ * @property string                      $title
  * @property ?string|?\DateTimeImmutable $createdAt
  */
 class Form extends ActiveRecord

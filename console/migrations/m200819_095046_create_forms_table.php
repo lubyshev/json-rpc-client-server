@@ -16,7 +16,8 @@ class m200819_095046_create_forms_table extends Migration
         $this->createTable('{{%forms}}', [
             'id'        => $this->primaryKey(),
             'uuid'      => $this->char(36)->unique(),
-            'formType' => $this->string(50)->notNull(),
+            'formType'  => $this->string(50)->notNull(),
+            'title'     => $this->string(50)->notNull(),
             'createdAt' => $this->dateTime()->notNull()->defaultExpression('NOW()'),
         ]);
         $this->createIndex(

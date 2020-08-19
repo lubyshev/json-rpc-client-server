@@ -9,19 +9,6 @@ use yii\web\NotFoundHttpException;
 
 class FormRepository
 {
-    public function createForm(string $formType): Form
-    {
-        $form = new Form();
-        do {
-            $form->uuid = ApiParamsHelper::createGuid();
-        } while (
-            $this->findFormByUuid($form->uuid)
-        );
-        $form->formType->setValue($formType);
-
-        return $form;
-    }
-
     public function findFormByUuid(string $uuid): ?Form
     {
         return Form::findOne(['uuid' => $uuid]);
