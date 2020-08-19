@@ -7,7 +7,7 @@ Content-Type: application/json
   "value": "content"
 }
 
-### Send POST request to JSON-RPC
+### Send POST request to JSON-RPC Author
 POST http://rpc-server.loc/rpc
 Content-Type: application/json
 
@@ -15,6 +15,19 @@ Content-Type: application/json
   "jsonrpc": "2.0",
   "id": 15,
   "method": "getAuthorForm",
+  "params": {
+    "pageUid": null
+  }
+}
+
+### Send POST request to JSON-RPC Book
+POST http://rpc-server.loc/rpc
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 15,
+  "method": "getBookForm",
   "params": {
     "pageUid": null
   }
