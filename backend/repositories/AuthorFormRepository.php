@@ -12,7 +12,7 @@ class AuthorFormRepository extends FormRepository
     public function getFormFields(string $pageUid): array
     {
         $form = $this->getFormByUuid($pageUid);
-        if(FormTypeField::TYPE_AUTHOR !== $form->formType->getValue()) {
+        if (FormTypeField::TYPE_AUTHOR !== $form->formType->getValue()) {
             throw new NotFoundHttpException('Page not found');
         }
         $model = $this->getAuthorByUuid($form->uuid);
@@ -22,6 +22,7 @@ class AuthorFormRepository extends FormRepository
         }
 
         return [
+            'formType'   => FormTypeField::TYPE_AUTHOR,
             'pageUid'    => $model->uuid,
             'name'       => $model->name,
             'lastName'   => $model->lastName,

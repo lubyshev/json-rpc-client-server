@@ -12,7 +12,7 @@ class BookFormRepository extends FormRepository
     public function getFormFields(string $pageUid): array
     {
         $form = $this->getFormByUuid($pageUid);
-        if(FormTypeField::TYPE_BOOK !== $form->formType->getValue()) {
+        if (FormTypeField::TYPE_BOOK !== $form->formType->getValue()) {
             throw new NotFoundHttpException('Page not found');
         }
         $model = $this->getBookByUuid($form->uuid);
@@ -22,9 +22,10 @@ class BookFormRepository extends FormRepository
         }
 
         return [
-            'pageUid' => $model->uuid,
-            'title'   => $model->title,
-            'review'  => $model->review,
+            'formType' => FormTypeField::TYPE_BOOK,
+            'pageUid'  => $model->uuid,
+            'title'    => $model->title,
+            'review'   => $model->review,
         ];
     }
 
