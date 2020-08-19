@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace backend\models;
+namespace common\models;
 
-use backend\models\fields\FormTypeField;
+use common\models\fields\FormTypeField;
 use yii\db\ActiveRecord;
 
 /**

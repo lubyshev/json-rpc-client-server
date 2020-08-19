@@ -4,14 +4,17 @@ declare(strict_types=1);
 namespace backend\repositories;
 
 use backend\models\Book;
-use backend\models\fields\FormTypeField;
+use common\models\fields\FormTypeField;
+use yii\web\NotFoundHttpException;
 
 class BookFormRepository extends FormRepository
 {
-    public function getFormFields(?string $pageUid): array
+    public function getFormFields(string $pageUid): array
     {
-        $form = $this->getForm(FormTypeField::TYPE_BOOK, $pageUid);
-        $form->save();
+        $form = $this->getFormByUuid($pageUid);
+        if(FormTypeField::TYPE_BOOK !== $form->formType->getValue()) {
+            throw new NotFoundHttpException('Page not found');
+        }
         $model = $this->getBookByUuid($form->uuid);
         if (!$model) {
             $model       = new Book();

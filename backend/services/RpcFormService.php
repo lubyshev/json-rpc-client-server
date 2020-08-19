@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace backend\services;
 
-use backend\helpers\ApiParamsHelper;
 use backend\repositories\AuthorFormRepository;
 use backend\repositories\BookFormRepository;
 use Fig\Http\Message\StatusCodeInterface as StatusCodes;
 use yii\web\HttpException;
+use yii\web\NotFoundHttpException;
 
 class RpcFormService
 {
@@ -49,6 +49,9 @@ class RpcFormService
             \Yii::$app->response->headers->add('json-rpc-id', $params['id']);
         } else {
             $params['id'] = null;
+        }
+        if (!$params['params']['pageUid']) {
+            throw new NotFoundHttpException('Page not found');
         }
 
         return $params;

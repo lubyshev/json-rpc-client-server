@@ -3,32 +3,51 @@ declare(strict_types=1);
 
 namespace backend\repositories;
 
-use backend\helpers\ApiParamsHelper;
-use backend\models\Form;
+use common\helpers\ApiParamsHelper;
+use common\models\Form;
+use yii\web\NotFoundHttpException;
 
 class FormRepository
 {
-    public function getForm(string $formType, ?string $pageUid = null): Form
+    public function createForm(string $formType): Form
     {
-        $form = $this->getFormByUuid($pageUid);
+        $form = new Form();
+        do {
+            $form->uuid = ApiParamsHelper::createGuid();
+        } while (
+            $this->findFormByUuid($form->uuid)
+        );
+        $form->formType->setValue($formType);
+
+        return $form;
+    }
+
+    public function findFormByUuid(string $uuid): ?Form
+    {
+        return Form::findOne(['uuid' => $uuid]);
+    }
+
+    public function getFormByUuid(string $uuid): Form
+    {
+        $form = $this->findFormByUuid($uuid);
         if (!$form) {
-            $form = new Form();
-            do {
-                $form->uuid = ApiParamsHelper::createGuid();
-            } while (
-                $this->getFormByUuid($form->uuid)
-            );
-            $form->formType->setValue($formType);
+            throw new NotFoundHttpException('Page not found');
         }
 
         return $form;
     }
 
-    private function getFormByUuid(?string $uuid): ?Form
+    /**
+     * @param string $formType
+     *
+     * @return Form[]
+     */
+    public function getAllFormsByType(string $formType): array
     {
-        return $uuid
-            ? (Form::findOne(['uuid' => $uuid]) ?? null)
-            : null;
+        return Form::find()
+            ->where(['formType' => $formType])
+            ->orderBy(['id' => SORT_ASC])
+            ->all();
     }
 
 }

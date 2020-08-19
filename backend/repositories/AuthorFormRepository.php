@@ -4,14 +4,17 @@ declare(strict_types=1);
 namespace backend\repositories;
 
 use backend\models\Author;
-use backend\models\fields\FormTypeField;
+use common\models\fields\FormTypeField;
+use yii\web\NotFoundHttpException;
 
 class AuthorFormRepository extends FormRepository
 {
-    public function getFormFields(?string $pageUid): array
+    public function getFormFields(string $pageUid): array
     {
-        $form = $this->getForm(FormTypeField::TYPE_AUTHOR, $pageUid);
-        $form->save();
+        $form = $this->getFormByUuid($pageUid);
+        if(FormTypeField::TYPE_AUTHOR !== $form->formType->getValue()) {
+            throw new NotFoundHttpException('Page not found');
+        }
         $model = $this->getAuthorByUuid($form->uuid);
         if (!$model) {
             $model       = new Author();

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace backend\helpers;
+namespace common\helpers;
 
 class ApiParamsHelper
 {
