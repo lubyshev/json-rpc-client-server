@@ -20,7 +20,10 @@
         "yiisoft/yii2-swiftmailer": "~2.0.0 || ~2.1.0",
         "vlucas/phpdotenv": "^5.1",
         "ext-openssl": "*",
-        "fig/http-message-util": "^1.1"
+        "fig/http-message-util": "^1.1",
+        "guzzlehttp/guzzle": "^7.0",
+        "ext-json": "*",
+        "ext-http": "*"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

@@ -31,10 +31,10 @@ class PagesMenuService
             'items'    => [],
         ];
 
-        $authors = $this->repo->getAllFormsByType(
+        $items = $this->repo->getAllFormsByType(
             \common\models\fields\FormTypeField::TYPE_AUTHOR
         );
-        foreach ($authors as $item) {
+        foreach ($items as $item) {
             $result['items'][] = [
                 'label' => $item->title,
                 'url'   => ['page/'.$item->uuid],
@@ -52,10 +52,10 @@ class PagesMenuService
             'template' => '<a href="{url}" class="url-class">{label}</a>',
             'items'    => [],
         ];
-        $books  = $this->repo->getAllFormsByType(
+        $items  = $this->repo->getAllFormsByType(
             \common\models\fields\FormTypeField::TYPE_BOOK
         );
-        foreach ($books as $item) {
+        foreach ($items as $item) {
             $result['items'][] = [
                 'label' => $item->title,
                 'url'   => ['page/'.$item->uuid],
