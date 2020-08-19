@@ -1,14 +1,49 @@
 <?php
+declare(strict_types=1);
 
 /* @var $this \yii\web\View */
+
 /* @var $content string */
 
+use common\widgets\Alert;
+use frontend\repositories\FormRepository;
 use yii\helpers\Html;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use frontend\assets\AppAsset;
-use common\widgets\Alert;
+
+$repo = new FormRepository();
+
+// Authors list
+$authorsItem = [
+    'label'    => 'Authors',
+    'options'  => ['class' => 'dropdown'],
+    'template' => '<a href="{url}" class="url-class">{label}</a>',
+    'items'    => [],
+];
+$authors     = $repo->getAllFormsByType(\common\models\fields\FormTypeField::TYPE_AUTHOR);
+foreach ($authors as $item) {
+    $authorsItem['items'][] = [
+        'label' => $item->title,
+        'url'   => ['page/'.$item->uuid],
+    ];
+}
+
+// Books list
+$booksItem = [
+    'label'    => 'Books',
+    'options'  => ['class' => 'dropdown'],
+    'template' => '<a href="{url}" class="url-class">{label}</a>',
+    'items'    => [],
+];
+$books     = $repo->getAllFormsByType(\common\models\fields\FormTypeField::TYPE_BOOK);
+foreach ($books as $item) {
+    $booksItem['items'][] = [
+        'label' => $item->title,
+        'url'   => ['page/'.$item->uuid],
+    ];
+}
 
 AppAsset::register($this);
 ?>
@@ -16,11 +51,11 @@ AppAsset::register($this);
 <!DOCTYPE html>
 <html lang="<?= Yii::$app->language ?>">
 <head>
-    <meta charset="<?= Yii::$app->charset ?>">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="<?= Yii::$app->charset ?>">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <?php $this->registerCsrfMetaTags() ?>
-    <title><?= Html::encode($this->title) ?></title>
+  <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
 </head>
 <body>
@@ -30,13 +65,15 @@ AppAsset::register($this);
     <?php
     NavBar::begin([
         'brandLabel' => Yii::$app->name,
-        'brandUrl' => Yii::$app->homeUrl,
-        'options' => [
+        'brandUrl'   => Yii::$app->homeUrl,
+        'options'    => [
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
     $menuItems = [
         ['label' => 'Home', 'url' => ['/site/index']],
+        $authorsItem,
+        $booksItem,
         ['label' => 'About', 'url' => ['/site/about']],
         ['label' => 'Contact', 'url' => ['/site/contact']],
     ];
@@ -45,36 +82,36 @@ AppAsset::register($this);
         $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
     } else {
         $menuItems[] = '<li>'
-            . Html::beginForm(['/site/logout'], 'post')
-            . Html::submitButton(
-                'Logout (' . Yii::$app->user->identity->username . ')',
+            .Html::beginForm(['/site/logout'], 'post')
+            .Html::submitButton(
+                'Logout ('.Yii::$app->user->identity->username.')',
                 ['class' => 'btn btn-link logout']
             )
-            . Html::endForm()
-            . '</li>';
+            .Html::endForm()
+            .'</li>';
     }
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
-        'items' => $menuItems,
+        'items'   => $menuItems,
     ]);
     NavBar::end();
     ?>
 
-    <div class="container">
-        <?= Breadcrumbs::widget([
-            'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
-        ]) ?>
-        <?= Alert::widget() ?>
-        <?= $content ?>
-    </div>
+  <div class="container">
+      <?= Breadcrumbs::widget([
+          'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+      ]) ?>
+      <?= Alert::widget() ?>
+      <?= $content ?>
+  </div>
 </div>
 
 <footer class="footer">
-    <div class="container">
-        <p class="pull-left">&copy; <?= Html::encode(Yii::$app->name) ?> <?= date('Y') ?></p>
+  <div class="container">
+    <p class="pull-left">&copy; <?= Html::encode(Yii::$app->name) ?> <?= date('Y') ?></p>
 
-        <p class="pull-right"><?= Yii::powered() ?></p>
-    </div>
+    <p class="pull-right"><?= Yii::powered() ?></p>
+  </div>
 </footer>
 
 <?php $this->endBody() ?>
