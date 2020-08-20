@@ -5,18 +5,22 @@ namespace backend\services;
 
 use backend\repositories\AuthorFormRepository;
 use backend\repositories\BookFormRepository;
+use backend\repositories\FormRepository;
+use common\models\fields\FormTypeField;
 use Fig\Http\Message\StatusCodeInterface as StatusCodes;
 use yii\web\HttpException;
 use yii\web\NotFoundHttpException;
 
 class RpcFormService
 {
+    private const RPC_METHOD_ALL_FORMS   = 'getAllForms';
     private const RPC_METHOD_AUTHOR_FORM = 'getAuthorForm';
     private const RPC_METHOD_BOOK_FORM   = 'getBookForm';
 
     private const RPC_METHODS = [
-        'getAuthorForm',
-        'getBookForm',
+        self::RPC_METHOD_ALL_FORMS,
+        self::RPC_METHOD_AUTHOR_FORM,
+        self::RPC_METHOD_BOOK_FORM,
     ];
 
     private array $params;
@@ -26,6 +30,9 @@ class RpcFormService
         $this->params = $this->getParams();
         $result       = null;
         switch ($this->params['method']) {
+            case self::RPC_METHOD_ALL_FORMS:
+                $result = $this->getAllForms();
+                break;
             case self::RPC_METHOD_AUTHOR_FORM:
                 $result = $this->getAuthorForm();
                 break;
@@ -50,7 +57,10 @@ class RpcFormService
         } else {
             $params['id'] = null;
         }
-        if (!$params['params']['pageUid']) {
+        if (
+            self::RPC_METHOD_ALL_FORMS !== $params['method']
+            && !$params['params']['pageUid']
+        ) {
             throw new NotFoundHttpException('Page not found');
         }
 
@@ -77,6 +87,16 @@ class RpcFormService
         ];
     }
 
+    private function getAllForms()
+    {
+        $repo = new FormRepository();
+
+        return [
+            FormTypeField::TYPE_AUTHOR => $repo->getAllFormsByType(FormTypeField::TYPE_AUTHOR),
+            FormTypeField::TYPE_BOOK   => $repo->getAllFormsByType(FormTypeField::TYPE_BOOK),
+        ];
+    }
+
     private function checkRpcParams(array $params): void
     {
         if (!isset($params['jsonrpc'], $params['method'], $params['params'])) {
@@ -85,19 +105,29 @@ class RpcFormService
                 'Invalid Request', -32600
             );
         }
+
         if (
             '2.0' !== $params['jsonrpc']
             || !is_array($params['params'])
-            || !array_key_exists('pageUid', $params['params'])
         ) {
             throw new HttpException(
                 StatusCodes::STATUS_INTERNAL_SERVER_ERROR,
                 'Invalid params', -32602);
         }
+
         if (!in_array($params['method'], self::RPC_METHODS)) {
             throw new HttpException(
                 StatusCodes::STATUS_NOT_FOUND,
                 'Method not found', -32601);
+        }
+
+        if (
+            self::RPC_METHOD_ALL_FORMS !== $params['method']
+            && !array_key_exists('pageUid', $params['params'])
+        ) {
+            throw new HttpException(
+                StatusCodes::STATUS_INTERNAL_SERVER_ERROR,
+                'Invalid params', -32602);
         }
     }
 

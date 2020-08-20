@@ -36,8 +36,8 @@ class PagesMenuService
         );
         foreach ($items as $item) {
             $result['items'][] = [
-                'label' => $item->title,
-                'url'   => ['page/'.$item->uuid],
+                'label' => $item['title'],
+                'url'   => ['page/'.$item['uuid']],
             ];
         }
 
@@ -57,8 +57,8 @@ class PagesMenuService
         );
         foreach ($items as $item) {
             $result['items'][] = [
-                'label' => $item->title,
-                'url'   => ['page/'.$item->uuid],
+                'label' => $item['title'],
+                'url'   => ['page/'.$item['uuid']],
             ];
         }
 
