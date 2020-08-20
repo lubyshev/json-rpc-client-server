@@ -8,6 +8,7 @@ use Fig\Http\Message\StatusCodeInterface as StatusCodes;
 use frontend\repositories\FormRepository;
 use GuzzleHttp\Client;
 use Psr\Http\Message\ResponseInterface;
+use yii\web\BadRequestHttpException;
 use yii\web\HttpException;
 
 class RpcClientService
@@ -25,6 +26,14 @@ class RpcClientService
     public function getFormByUuid(string $uuid): array
     {
         return $this->getFormParams(
+            $uuid,
+            $this->repo->getFormTypeByUuid($uuid)
+        );
+    }
+
+    public function postFormByUuid(string $uuid)
+    {
+        return $this->postFormParams(
             $uuid,
             $this->repo->getFormTypeByUuid($uuid)
         );
@@ -49,7 +58,42 @@ class RpcClientService
         }
     }
 
-    private function getFormParams(string $uuid, string $formType)
+    private function getFormParams(string $uuid, string $formType): array
+    {
+        $response = $this->sendRequest(
+            $this->getRpcMethodName($formType),
+            $uuid,
+            ['action' => 'get']
+        );
+        $result   = json_decode((string)$response->getBody(), true);
+        $this->checkRequestResult($response, $result);
+
+        return $result;
+    }
+
+    private function postFormParams(string $uuid, string $formType): array
+    {
+        $post = \Yii::$app->request->post();
+        if (!\Yii::$app->request->validateCsrfToken($post['_csrf'])) {
+            throw new BadRequestHttpException('Bad Request');
+        }
+        unset($post['pageUid']);
+        unset($post['_csrf']);
+        $post['action'] = 'post';
+
+        $response = $this->sendRequest(
+            $this->getRpcMethodName($formType),
+            $uuid,
+            $post
+        );
+
+        $result = json_decode((string)$response->getBody(), true);
+        $this->checkRequestResult($response, $result);
+
+        return $result;
+    }
+
+    private function getRpcMethodName(string $formType): string
     {
         $method = null;
         switch ($formType) {
@@ -63,24 +107,30 @@ class RpcClientService
         if (!$method) {
             throw new \HttpRequestMethodException("Invalid form type: `{$formType}`");
         }
-        $data     = [
-            'jsonrpc' => '2.0',
-            'id'      => 1,
-            'method'  => $method,
-            'params'  => [
-                'pageUid' => $uuid,
-            ],
-        ];
-        $client   = new Client([
+
+        return $method;
+    }
+
+    private function sendRequest(string $methodName, string $uuid, ?array $params = null): ResponseInterface
+    {
+        return (new Client([
             'base_uri'    => getenv('JSON_RPC_SERVER_HOST'),
             'timeout'     => 2.0,
             'http_errors' => false,
+        ]))->post('', [
+            'json' => [
+                'jsonrpc' => '2.0',
+                'id'      => 1,
+                'method'  => $methodName,
+                'params'  => array_merge(
+                    [
+                        'pageUid' => $uuid,
+                    ],
+                    $params ? $params : []
+                ),
+            ]
+            ,
         ]);
-        $response = $client->post('', ['json' => $data,]);
-        $result   = json_decode((string)$response->getBody(), true);
-        $this->checkRequestResult($response, $result);
-
-        return $result;
     }
 
 }
