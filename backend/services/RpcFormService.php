@@ -59,7 +59,7 @@ class RpcFormService
 
     private function getAuthorForm(): array
     {
-        $fields = (new AuthorFormRepository())->getFormFields($this->params['params']['pageUid']);
+        $fields = (new AuthorFormRepository())->getFormFields($this->params['params']);
 
         return [
             'fields'   => $fields,
@@ -69,7 +69,7 @@ class RpcFormService
 
     private function getBookForm(): array
     {
-        $fields = (new BookFormRepository())->getFormFields($this->params['params']['pageUid']);
+        $fields = (new BookFormRepository())->getFormFields($this->params['params']);
 
         return [
             'fields'   => $fields,

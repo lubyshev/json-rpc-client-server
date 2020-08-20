@@ -9,8 +9,12 @@ use yii\web\NotFoundHttpException;
 
 class AuthorFormRepository extends FormRepository
 {
-    public function getFormFields(string $pageUid): array
+    private const ACTION_GET = 'get';
+    private const ACTION_POST = 'post';
+
+    public function getFormFields(array $params): array
     {
+        $pageUid = $params['pageUid'];
         $form = $this->getFormByUuid($pageUid);
         if (FormTypeField::TYPE_AUTHOR !== $form->formType->getValue()) {
             throw new NotFoundHttpException('Page not found');
@@ -19,6 +23,10 @@ class AuthorFormRepository extends FormRepository
         if (!$model) {
             $model       = new Author();
             $model->uuid = $form->uuid;
+        }
+        if(self::ACTION_POST === $params['action']) {
+            $model->setAttributes($params, false);
+            $model->save();
         }
 
         return [
