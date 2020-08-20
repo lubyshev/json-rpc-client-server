@@ -3,11 +3,8 @@ declare(strict_types=1);
 
 namespace frontend\repositories;
 
-use common\models\fields\FormTypeField;
-use common\models\Form;
 use frontend\traits\RpcClientTrait;
 use Symfony\Component\CssSelector\Exception\InternalErrorException;
-use yii\web\NotFoundHttpException;
 
 class FormRepository
 {
@@ -45,15 +42,15 @@ class FormRepository
     /**
      * @param string $formType
      *
-     * @return []
+     * @return ?[]
      */
-    public function getAllFormsByType(string $formType): array
+    public function getAllFormsByType(string $formType): ?array
     {
         return $this->forms[$formType];
     }
 
     /**
-     * @param string $formType
+     * @param string $uuid
      *
      * @return string
      */
