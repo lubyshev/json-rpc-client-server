@@ -62,8 +62,10 @@ class RpcClientService
     {
         $response = $this->sendRequest(
             $this->getRpcMethodName($formType),
-            $uuid,
-            ['action' => 'get']
+            [
+                'pageUid' => $uuid,
+                'action'  => 'get',
+            ]
         );
         $result   = json_decode((string)$response->getBody(), true);
         $this->checkRequestResult($response, $result);
@@ -77,13 +79,11 @@ class RpcClientService
         if (!\Yii::$app->request->validateCsrfToken($post['_csrf'])) {
             throw new BadRequestHttpException('Bad Request');
         }
-        unset($post['pageUid']);
         unset($post['_csrf']);
         $post['action'] = 'post';
 
         $response = $this->sendRequest(
             $this->getRpcMethodName($formType),
-            $uuid,
             $post
         );
 
@@ -111,7 +111,7 @@ class RpcClientService
         return $method;
     }
 
-    private function sendRequest(string $methodName, string $uuid, ?array $params = null): ResponseInterface
+    private function sendRequest(string $methodName, array $params): ResponseInterface
     {
         return (new Client([
             'base_uri'    => getenv('JSON_RPC_SERVER_HOST'),
@@ -122,12 +122,7 @@ class RpcClientService
                 'jsonrpc' => '2.0',
                 'id'      => 1,
                 'method'  => $methodName,
-                'params'  => array_merge(
-                    [
-                        'pageUid' => $uuid,
-                    ],
-                    $params ? $params : []
-                ),
+                'params'  => $params,
             ]
             ,
         ]);

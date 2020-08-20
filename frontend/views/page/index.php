@@ -7,7 +7,7 @@ use frontend\widgets\RpcFormWidget;
 
 ?>
   <h1><?= ucfirst($formData['fields']['formType']) ?> page</h1>
-  <hr/><h2>Form:</h2>
+  <hr/><hr/><h2>Form:</h2>
   <hr/>
 <?=
 RpcFormWidget::widget([
@@ -15,7 +15,7 @@ RpcFormWidget::widget([
     'template' => $formData['template'],
 ])
 ?>
-  <hr/><h2>Data from Json-Rpc server:</h2>
+  <hr/><hr/><h2>Data from Json-Rpc server:</h2>
   <hr/>
 <?php \yii\helpers\VarDumper::dump($formData, 10, true); ?>
 
