@@ -20,7 +20,8 @@
   example.com. IN MX 10 mail.example.com.
 ```
 
-* SPF запись. Запись типа TXT.
+* SPF запись.
+
   `mail.example.com. TXT "v=spf1 a mx ~all"`
 
 * DKIM запись.
@@ -53,7 +54,6 @@
 
 * Double opt-in. Двойная подписка.
 * Отписка
-  * List-Unsubscribe: <ссылка на отписку> в заголовке
+  * Добавить заголовок List-Unsubscribe: <ссылка на отписку> в заголовке
   * Первая кнопка в письме на отписку
 * Стоп слова (смотреть тут: [Рекомендации Яндекс](https://zen.yandex.ru/media/id/5d7b7eff35c8d800ad8f03b9/pisma-popadaiut-v-papku-spam-kak-otpravit-rassylku-vo-vhodiascie-5dc142772fda8600af6cb7ec))
-* Ссылки из письма через промежточный урл аналитики чтения.
