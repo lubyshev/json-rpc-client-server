@@ -314,3 +314,146 @@ I`m here!
 ### Итог
 
 * В спам не попадает.
+
+## Отправка с помощью PhpMailer
+
+### Установка
+
+```bash
+# composer require phpmailer/phpmailer
+```
+
+### Код
+
+```php
+
+        use PHPMailer\PHPMailer\PHPMailer;
+
+        $config = $this->getDI()["config"];
+
+        $mail = new PHPMailer();
+        $mail->IsSMTP();
+        $mail->Mailer     = "smtp";
+        $mail->SMTPDebug  = 1;
+        $mail->SMTPAuth   = true;
+        $mail->SMTPSecure = "tls";
+        $mail->Port       = 587;
+        $mail->Host       = $config["mailer"]->server;
+        $mail->Username   = $config["mailer"]->auth;
+        $mail->Password   = $config["mailer"]->password;
+        $mail->IsHTML(true);
+        $mail->AddAddress($config["mailer"]->to);
+        $mail->SetFrom($config["mailer"]->from);
+        $mail->AddReplyTo($config["mailer"]->from);
+        $mail->Subject = "Test PHP Mailer";
+        $mail->MsgHTML('<h1>Hello!</h1>');
+        
+        $mail->Send();
+
+````
+
+### Что пришло на сервер
+
+```text
+
+Delivered-To: xxx@gmail.com
+Received: by 2002:aa7:c391:0:0:0:0:0 with SMTP id k17csp138636edq;
+        Wed, 26 Aug 2020 23:23:39 -0700 (PDT)
+X-Received: by 2002:a2e:850b:: with SMTP id j11mr8351714lji.254.1598509419065;
+        Wed, 26 Aug 2020 23:23:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1598509419; cv=none;
+        d=google.com; s=arc-20160816;
+        b=uNTM12vtwXuy9xbb+3JlUDyFID19vu7PNNRLodO/XOgv+gjlMatV7bWaSx4PIY+Gyp
+         7MQQjjjS3jjiiMPItcfLsJ/3vAYRBnwGLm9o+9/hz0wXZpU4rBWsi8cG7+bOY8S45RiV
+         P49LHZt1aaHh9bmrBUMR5+hMsbcOOUDW6eCLJoKNXCVkCKk/s1XyMSXjjBvSnA6gi2Cd
+         LsAlJSKF7Vv58JOsfINifQ8DbGAP4YZBe7nc+zh7GWucE7BobShDgBa1enIyqGmHZp27
+         Q5Cr+9ZSUUo7cgyYYEzS+98UTtX1zHE3MfOhwZcv/sTJgXVn6l4nGMBIbOdHYIa53VUy
+         lKdw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20160816;
+        h=content-transfer-encoding:mime-version:message-id:subject:reply-to
+         :from:to:date:dkim-signature;
+        bh=f1LPoXojNXu5pSN7/tbeuZVj6SfD1gk5Up+BZrt7WVo=;
+        b=fhS7DhhEFZcT34lWWK6qX8PFuLeOgJHot3JE5OOIu/SODxzBWxkuIFh10wbml0k5NL
+         UV3IJHtA+pauY11xoOwyMUAosCFi6gxASg6r0oFars9yOleWmLcN/wGR4tE8lq2Hy+Rv
+         rcmYin1qyi/U2H3iVnoIY552/FA9zMhIwt8BEUcw2Xh9FbwXfuoph67GpU6Kov8wf5a1
+         qzSk7hFCJC/rpLQBG2mOw/iAqKLcg1sp1VPtS0rs0efbedrs2Ask8mVZ5FoTcbgF0Ppt
+         QtoQI8gKHPARqfbHrzhrixAdd88S6vEG7TrUkUw4444dRydKzz5RWeulHB1y25h1yCfJ
+         8PfQ==
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@gmail.com header.s=20161025 header.b=FNLV5gfA;
+       spf=pass (google.com: domain of bulk.bulk.slatel@gmail.com designates 209.85.220.65 as permitted sender) smtp.mailfrom=bulk.bulk.slatel@gmail.com;
+       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com
+Return-Path: <bulk.bulk.slatel@gmail.com>
+Received: from mail-sor-f65.google.com (mail-sor-f65.google.com. [209.85.220.65])
+        by mx.google.com with SMTPS id r3sor466658lji.45.2020.08.26.23.23.39
+        for <xxx@gmail.com>
+        (Google Transport Security);
+        Wed, 26 Aug 2020 23:23:39 -0700 (PDT)
+Received-SPF: pass (google.com: domain of bulk.bulk.slatel@gmail.com designates 209.85.220.65 as permitted sender) client-ip=209.85.220.65;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@gmail.com header.s=20161025 header.b=FNLV5gfA;
+       spf=pass (google.com: domain of bulk.bulk.slatel@gmail.com designates 209.85.220.65 as permitted sender) smtp.mailfrom=bulk.bulk.slatel@gmail.com;
+       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:to:from:reply-to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=f1LPoXojNXu5pSN7/tbeuZVj6SfD1gk5Up+BZrt7WVo=;
+        b=FNLV5gfAVayjHP1GexP1i9qfRskA5fkuAbReSHWa80cs+KpL6D+BZj98MG2eqiy8zj
+         iksCNKrL67Bbb/4aB5GvdXbl1GoeYIdB/b0nwzeQVZ0dUeq0k6QbOJndsbR8yCZeMJDR
+         aXJBQ85Ma+SovdiR+isLvCuF2sPFfc5L6GiwkKYcVu2ATiTu/B2A3xKxZy1Vhzq+oN0F
+         /KZVJ6sgPGzHa2Z0dWza0b5iGlmFKYUxL7SWCe9eygI1Ih7sbnMGgbc96PXUwfDsgMFU
+         5uPpXaOCJzakb0Ibh6PTherr20n1D9nTfS3BahGeaJ/wjHtpu8Yrlrf5iysVKqFgAxgm
+         5jyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:to:from:reply-to:subject:message-id
+         :mime-version:content-transfer-encoding;
+        bh=f1LPoXojNXu5pSN7/tbeuZVj6SfD1gk5Up+BZrt7WVo=;
+        b=Z6l/Bz7DSDcUEd7GmFa2UtOzWhO7vObY1zPhsrOJAGa5sqsezUscJyhFk83zygRLTT
+         V6ObIqSmLjKOHMZ1xLhsRmZdmM2yBrAR2ebp0MnmGOlKj6cesCRaR0jz/8HiNkaOwN/d
+         O3Nh+G0aWCXZ0roHnlYzejpMCIAdDoXQH/3CHF7sQandFSJKhlS9tr6KVlLuS3Gv966A
+         X517hVGGUl/M22gxW90KX1lXKTH03KZhV0hUAk8+2vGfQ7Pp8rDHaN4OJsW5/VWU/nnP
+         q9oxiaba8eZyyuAu07MRiKUK3g8UwR4jAwBirKuBZ5kSzrR6+0eOPk4W96LBFiyylzCA
+         oXHA==
+X-Gm-Message-State: AOAM531s/xmNu2IyaV2mr4ddSXA3zhIq1z2wCc6gQMQRi7WFcC2zUrEw FrIqSu1ZSbaAhnDtZdEv0kSdm7bOqTBXkWWn
+X-Google-Smtp-Source: ABdhPJypiZ6Yp64HKdOMH+EJjvc/dd0huRP+oTiM5IWfUgcEaN1BDcS4JBJPxfT2xxSmVtC7hAi5PA==
+X-Received: by 2002:a2e:808f:: with SMTP id i15mr9424092ljg.151.1598509418540;
+        Wed, 26 Aug 2020 23:23:38 -0700 (PDT)
+Return-Path: <bulk.bulk.slatel@gmail.com>
+Received: from 127.0.0.1 (ppp111-222-333-444.pppoe.komi.dslavangard.ru. [111.222.333.444])
+        by smtp.gmail.com with ESMTPSA id e10sm264868lfq.81.2020.08.26.23.23.37
+        for <xxx@gmail.com>
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 26 Aug 2020 23:23:38 -0700 (PDT)
+Date: Thu, 27 Aug 2020 09:23:37 +0300
+To: xxx@gmail.com
+From: bulk.bulk.slatel@gmail.com
+Reply-To: bulk.bulk.slatel@gmail.com
+Subject: Test PHP Mailer
+Message-ID: <YWNq1H9b61sEJX9cHPWj1vfRXNNJZcVAUvZ7qzOnM@127.0.0.1>
+X-Mailer: PHPMailer 6.1.7 (https://github.com/PHPMailer/PHPMailer)
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="b1_YWNq1H9b61sEJX9cHPWj1vfRXNNJZcVAUvZ7qzOnM"
+Content-Transfer-Encoding: 8bit
+
+--b1_YWNq1H9b61sEJX9cHPWj1vfRXNNJZcVAUvZ7qzOnM
+Content-Type: text/plain; charset=us-ascii
+
+Hello!
+
+--b1_YWNq1H9b61sEJX9cHPWj1vfRXNNJZcVAUvZ7qzOnM
+Content-Type: text/html; charset=us-ascii
+
+<h1>Hello!</h1>
+
+
+--b1_YWNq1H9b61sEJX9cHPWj1vfRXNNJZcVAUvZ7qzOnM--
+
+```
+
+### Итог
+
+* В спам не попадает.
+* Шлет сразу как multipart/alternative.
+* Автоматически формирует plain-text из html части.
